@@ -9,9 +9,13 @@ import UIKit
 import MapKit
 import CoreLocation
 
-class ViewController: UIViewController, CLLocationManagerDelegate {
+class ViewController: UIViewController, CLLocationManagerDelegate,MKMapViewDelegate {
 
+    @IBOutlet weak var directionBtn: UIButton!
     @IBOutlet weak var mapView: MKMapView!
+    
+    
+    var destination: CLLocationCoordinate2D!
     
     let point = ["A","B","C"]
     
@@ -28,11 +32,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         // Do any additional setup after loading the view.
         locationManager.requestWhenInUseAuthorization()
         mapView.showsUserLocation = true
+        mapView.delegate = self
         
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.startUpdatingLocation()
-        
+    
             
             addSingleTap()
 
@@ -73,42 +78,33 @@ func addSingleTap() {
                         if placemark.locality != nil {
                             address += placemark.locality! + "\n"
                         }
-                        
                         annotation.title = point.randomElement()
+        
                     }
-                    
+                        
                 }
             }
+            destination = coordinate
             annotation.coordinate = coordinate
             mapView.addAnnotation(annotation)
             
-            // add coordinate to locationArr
+            // 
             
             locationsArray.append(coordinate)
+            
             
         }
         
         if( dropPinCount == 3){
-           // addPolygon()
-         //   DistanceBetweenMapPoints()
+            addPolyline()
+            DistanceBetweenMapPoints()
+            
 //
         }
         
         dropPinCount += 1
         //destination = coordinate
     }
-    
-    func removePin() {
-        for annotation in mapView.annotations {
-            mapView.removeAnnotation(annotation)
-        }
-        
-//        map.removeAnnotations(map.annotations)
-    }
-    
-    
-   
-    
     
     func DistanceBetweenMapPoints(){
         
@@ -131,7 +127,8 @@ func addSingleTap() {
         annotation1.title = String(distanceInMetersFirst) + " m"
         annotation1.coordinate = location1
         
-        //mapView.addAnnotation(annotation1)
+         mapView.addAnnotation(annotation1)
+       
         
         // display distance between second third points
         
@@ -142,7 +139,7 @@ func addSingleTap() {
         let annotation2 = MKPointAnnotation()
         annotation2.title = String(distanceInMetersSecond) + " m"
         annotation2.coordinate = location2
-       // mapView.addAnnotation(annotation2)
+        mapView.addAnnotation(annotation2)
         
         // display distance between second third points
         
@@ -153,10 +150,69 @@ func addSingleTap() {
         let annotation3 = MKPointAnnotation()
         annotation3.title = String(distanceInMetersThird) + " m"
         annotation3.coordinate = location3
-        //mapView.addAnnotation(annotation3)
+        mapView.addAnnotation(annotation3)
         
         
     }
+    
+    func addPolygon() {
+        let polygon = MKPolygon(coordinates: locationsArray, count: locationsArray.count)
+        mapView.addOverlay(polygon)
+    }
+    func addPolyline(){
+        let polyline = MKPolyline(coordinates: locationsArray, count: locationsArray.count)
+        mapView.addOverlay(polyline)
+        
+    }
+    
+    func map(_ mapView: MKMapView, rendererFor Overlay: MKOverlay) -> MKOverlayRenderer {
+        if Overlay is MKPolyline {
+            let rendrer = MKPolylineRenderer(overlay: Overlay)
+            rendrer.strokeColor = UIColor.blue
+            rendrer.lineWidth = 3
+            return rendrer
+        } else if Overlay is MKPolygon {
+            let rendrer = MKPolygonRenderer(overlay: Overlay)
+            rendrer.fillColor = UIColor.red.withAlphaComponent(0.6)
+            rendrer.strokeColor = UIColor.yellow
+            rendrer.lineWidth = 2
+            return rendrer
+        }
+        return MKOverlayRenderer()
+}
+    
+    
+    @IBAction func navigationBtn(_ sender: Any) {
+        
+        
+        mapView.removeOverlays(mapView.overlays)
+        
+        let sourcePlaceMark = MKPlacemark(coordinate: locationManager.location!.coordinate)
+        let destinationPlaceMark = MKPlacemark(coordinate: destination)
+
+        let directionRequest = MKDirections.Request()
+        
+        directionRequest.source = MKMapItem(placemark: sourcePlaceMark)
+        directionRequest.destination = MKMapItem(placemark: destinationPlaceMark)
+        
+        
+        let directions = MKDirections(request: directionRequest)
+        directions.calculate { (response, error) in
+            guard let directionResponse = response else {return}
+        
+            let route = directionResponse.routes[0]
+            self.mapView.addOverlay(route.polyline, level: .aboveRoads)
+        
+            let rect = route.polyline.boundingMapRect
+            self.mapView.setVisibleMapRect(rect, edgePadding: UIEdgeInsets(top: 100, left: 100, bottom: 100, right: 100), animated: true)
+            
+           self.mapView.setRegion(MKCoordinateRegion(rect), animated: true)
+        }
+    }
+    
+    
+    
+    
 }
     
     

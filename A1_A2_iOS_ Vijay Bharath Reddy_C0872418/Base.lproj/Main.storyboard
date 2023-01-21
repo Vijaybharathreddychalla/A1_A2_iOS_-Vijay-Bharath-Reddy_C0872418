@@ -21,17 +21,30 @@
                                 <rect key="frame" x="0.0" y="59" width="393" height="759"/>
                                 <standardMapConfiguration key="preferredConfiguration"/>
                             </mapView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="l5s-Az-Oa0">
+                                <rect key="frame" x="302" y="732" width="75" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="location.fill" catalog="system"/>
+                                <connections>
+                                    <action selector="navigationBtn:" destination="BYZ-38-t0r" eventType="touchUpInside" id="0m5-gc-ey7"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="l5s-Az-Oa0" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="673" id="IMh-9o-79m"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="l5s-Az-Oa0" secondAttribute="bottom" constant="51" id="Rms-MG-S7T"/>
+                            <constraint firstItem="l5s-Az-Oa0" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="302" id="URU-Su-dEE"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="TOB-He-yAj" secondAttribute="bottom" id="X8R-Bi-EJB"/>
                             <constraint firstItem="TOB-He-yAj" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="YsB-lb-Ddu"/>
                             <constraint firstItem="TOB-He-yAj" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="kfp-Ld-NVA"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="TOB-He-yAj" secondAttribute="trailing" id="mR0-dC-jvy"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="l5s-Az-Oa0" secondAttribute="trailing" constant="16" id="udo-0s-bOj"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="directionBtn" destination="l5s-Az-Oa0" id="8fL-vZ-Hrm"/>
                         <outlet property="mapView" destination="TOB-He-yAj" id="nQD-al-sJs"/>
                     </connections>
                 </viewController>
@@ -41,6 +54,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="location.fill" catalog="system" width="128" height="119"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
